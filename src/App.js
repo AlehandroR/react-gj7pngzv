@@ -1,4 +1,3 @@
-
 import React from "react";
 
 export default function App() {
@@ -16,7 +15,7 @@ export default function App() {
   const spotGroups = {
 
     "Call de BB a Open push de CO": [
-      "BB Call con 15bb a open push de CO 5bb",
+      "BB Call con 15bn a open push de CO 5bb",
       "BB Call con 15bb a open push de CO 6bb"
     ],
 
@@ -31,29 +30,15 @@ export default function App() {
     )
   };
 
-  const allSpots =
-    Object.values(spotGroups).flat();
+  const allSpots = Object.values(spotGroups).flat();
 
-  const [selectedSpot, setSelectedSpot] =
-    React.useState(allSpots[0]);
-
-  const [spotRanges, setSpotRanges] =
-    React.useState({});
-
-  const [confirmedSpots, setConfirmedSpots] =
-    React.useState({});
-
-  const [sentGroups, setSentGroups] =
-    React.useState({});
-
-  const [selectedHands, setSelectedHands] =
-    React.useState([]);
-
-  const [sliderValue, setSliderValue] =
-    React.useState(0);
-
-  const [mode, setMode] =
-    React.useState("slider");
+  const [selectedSpot, setSelectedSpot] = React.useState(allSpots[0]);
+  const [spotRanges, setSpotRanges] = React.useState({});
+  const [confirmedSpots, setConfirmedSpots] = React.useState({});
+  const [sentGroups, setSentGroups] = React.useState({});
+  const [selectedHands, setSelectedHands] = React.useState([]);
+  const [sliderValue, setSliderValue] = React.useState(0);
+  const [mode, setMode] = React.useState("slider");
 
   const isMouseDown = React.useRef(false);
   const dragMode = React.useRef(null);
@@ -113,7 +98,6 @@ export default function App() {
   );
 
   const buildRangeFromSlider = (val) => {
-
     if (val <= 0) return [];
 
     let acc = 0;
@@ -130,7 +114,6 @@ export default function App() {
   };
 
   const calcSliderFromHands = (hands) => {
-
     if (!hands.length) return 0;
 
     let sum = 0;
@@ -146,14 +129,10 @@ export default function App() {
 
   React.useEffect(() => {
 
-    const saved =
-      spotRanges[selectedSpot] || [];
+    const saved = spotRanges[selectedSpot] || [];
 
     setSelectedHands(saved);
-
-    setSliderValue(
-      calcSliderFromHands(saved)
-    );
+    setSliderValue(calcSliderFromHands(saved));
 
   }, [selectedSpot]);
 
@@ -161,8 +140,7 @@ export default function App() {
 
     if (mode === "slider") {
 
-      const range =
-        buildRangeFromSlider(sliderValue);
+      const range = buildRangeFromSlider(sliderValue);
 
       setSelectedHands(range);
 
@@ -178,9 +156,7 @@ export default function App() {
 
     if (mode === "grid") {
 
-      setSliderValue(
-        calcSliderFromHands(selectedHands)
-      );
+      setSliderValue(calcSliderFromHands(selectedHands));
 
       setSpotRanges(prev => ({
         ...prev,
@@ -191,13 +167,10 @@ export default function App() {
   }, [selectedHands, mode]);
 
   const toggle = (h) => {
-
     setMode("grid");
 
     setSelectedHands(prev => {
-
       const exists = prev.includes(h);
-
       dragMode.current = exists ? "remove" : "add";
 
       return exists
@@ -207,11 +180,9 @@ export default function App() {
   };
 
   const paint = (h) => {
-
     setMode("grid");
 
     setSelectedHands(prev => {
-
       const exists = prev.includes(h);
 
       if (dragMode.current === "add") {
@@ -263,30 +234,152 @@ export default function App() {
       isConfirmed: true
     }));
 
-    const payload = {
-      access_key: WEB3FORMS_KEY,
-      subject: `Poker Group Submission: ${g} - ${playerName}`,
-      message: `
-PLAYER: ${playerName}
-
-GROUP: ${g}
-
-DATA:
-${JSON.stringify(groupData, null, 2)}
-      `
-    };
-
     await fetch("https://api.web3forms.com/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: `Poker Group Submission: ${g} - ${playerName}`,
+        message: `
+PLAYER: ${playerName}
+
+GROUP: ${g}
+
+DATA:
+${JSON.stringify(groupData, null, 2)}
+        `
+      })
     });
 
     setSentGroups(prev => ({ ...prev, [g]: true }));
   };
 
-  return <div />;
+  return (
+    <div style={{padding:20, background:"#0a0a0a", color:"white", minHeight:"100vh"}}>
+
+      {/* TITLE */}
+      <h1 style={{textAlign:"center",fontSize:42}}>
+        63 left cobran 27 avg 15bbs
+      </h1>
+
+      <p style={{textAlign:"center",color:"#aaa"}}>
+        Esto no es un examen, responde lo que crees que hace el meta o lo que harías tú, sin mirar el solver
+      </p>
+
+      {/* NAME */}
+      <div style={{textAlign:"center",marginBottom:15}}>
+        <input
+          value={playerName}
+          onChange={(e)=>setPlayerName(e.target.value)}
+          placeholder="Tu nombre o Anónimo"
+          style={{padding:10,borderRadius:8}}
+        />
+      </div>
+
+      {/* GROUPS */}
+      <div style={{display:"flex",justifyContent:"center",gap:10,flexWrap:"wrap"}}>
+        {Object.keys(spotGroups).map(g => {
+          const complete = isGroupComplete(g);
+
+          return (
+            <button
+              key={g}
+              onClick={()=>sendGroup(g)}
+              disabled={!complete}
+              style={{
+                padding:10,
+                borderRadius:8,
+                background: complete ? "#22c55e" : "#333",
+                color:"white",
+                border:"none"
+              }}
+            >
+              Enviar {g}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* SELECTOR */}
+      <div style={{textAlign:"center",margin:20}}>
+        <select
+          value={selectedSpot}
+          onChange={(e)=>setSelectedSpot(e.target.value)}
+          style={{padding:10,borderRadius:8}}
+        >
+          {Object.entries(spotGroups).map(([g,spots])=>(
+            <optgroup key={g} label={g}>
+              {spots.map(s=>(
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </div>
+
+      {/* GRID (simplificado visual pero funcional) */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(13,1fr)",gap:2,maxWidth:800,margin:"0 auto"}}>
+        {ranks.map((_,i)=>
+          ranks.map((_,j)=>{
+
+            let hand;
+            if(i===j) hand=ranks[i]+ranks[j];
+            else if(i<j) hand=ranks[i]+ranks[j]+"s";
+            else hand=ranks[j]+ranks[i]+"o";
+
+            const active = selectedHands.includes(hand);
+
+            return (
+              <button
+                key={hand}
+                onMouseDown={()=>toggle(hand)}
+                onMouseEnter={()=>paint(hand)}
+                style={{
+                  aspectRatio:"1/1",
+                  fontSize:10,
+                  background: active ? "#22c55e" : "#222",
+                  color:"white",
+                  border:"1px solid #333"
+                }}
+              >
+                {hand}
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* SLIDER */}
+      <div style={{textAlign:"center",marginTop:20}}>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={sliderValue}
+          onChange={(e)=>setSliderValue(+e.target.value)}
+        />
+      </div>
+
+      {/* CONFIRM */}
+      <div style={{textAlign:"center",marginTop:20}}>
+        <button
+          onClick={confirmSpot}
+          style={{
+            padding:10,
+            borderRadius:8,
+            background:"#333",
+            color:"white"
+          }}
+        >
+          Confirmar spot
+        </button>
+      </div>
+
+    </div>
+  );
 }

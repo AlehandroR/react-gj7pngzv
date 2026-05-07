@@ -383,8 +383,7 @@ ${JSON.stringify(groupData, null, 2)}
       </div>
 
       <p style={{textAlign:"center",color:"#aaa",marginBottom:20}}>
-        Esto no es un examen, responde lo que crees que hace el meta o lo que harías tú, sin mirar el solver
-        Para enviar la respuesta tienes que confirmar todos los spots de un grupo
+        Esto no es un examen, responde lo que crees que hace el meta o lo que harías tú, sin mirar el solver. Para enviar la respuesta tienes que confirmar todos los spots de un grupo
       </p>
 
       {/* GROUP BUTTONS */}

@@ -29,7 +29,7 @@ export default function App() {
     ],
 
     "Open push de CO": [
-      "Push de CO 6bbs (BU 20bbs, SB 20bbs, BB 15bbs)",
+      "Push de CO 5bbs (BU 20bbs, SB 20bbs, BB 15bbs)",
       "Push de CO 6bbs (BU 20bbs, SB 20bbs, BB 15bbs)"
     ],
 
